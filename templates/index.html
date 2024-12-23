@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Processor</title>
+</head>
+<body>
+    <h1>File Upload and Processing</h1>
+    <form id="upload-form" enctype="multipart/form-data">
+        <label for="file">Upload XML File:</label>
+        <input type="file" id="file" name="file" required>
+        <button type="submit">Upload</button>
+    </form>
+    <br>
+    <form id="process-form">
+        <label for="filename">Enter XML Filename:</label>
+        <input type="text" id="filename" name="filename" required>
+        <button type="submit">Process</button>
+    </form>
+    <br>
+    <form id="download-form">
+        <label for="csv-filename">Enter CSV Filename:</label>
+        <input type="text" id="csv-filename" name="csv-filename" required>
+        <button type="submit">Download</button>
+    </form>
+
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('file', document.getElementById('file').files[0]);
+            const res = await fetch('/upload', { method: 'POST', body: formData });
+            const data = await res.json();
+            alert(data.message || data.error);
+        });
+
+        document.getElementById('process-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const filename = document.getElementById('filename').value;
+            const res = await fetch('/process', { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename })
+            });
+            const data = await res.json();
+            alert(data.message || data.error);
+        });
+
+        document.getElementById('download-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const csvFilename = document.getElementById('csv-filename').value;
+            window.location.href = `/download/${csvFilename}`;
+        });
+    </script>
+</body>
+</html>
